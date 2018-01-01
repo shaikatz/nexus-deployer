@@ -83,8 +83,15 @@ var createAndUploadArtifacts = function (options, done) {
             ];
 
             if (options.auth) {
-                curlOptions.push('-u');
-                curlOptions.push('"'+options.auth.username + ":" + options.auth.password+'"');
+                if (options.auth.username && options.auth.password) {
+                    curlOptions.push('-u');
+                    curlOptions.push('"'+options.auth.username + ":" + options.auth.password+'"');
+                } else if (options.token) {
+                    curlOptions.push('-H');
+                    curlOptions.push(`Authorization: Basic ${options.token}`)
+                } else {
+                    throw {name: "IllegalArgumentException", message: "auth option specified without required options"};
+                }
             }
 
             if (options.insecure) {
